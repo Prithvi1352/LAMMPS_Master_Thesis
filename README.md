@@ -1,4 +1,4 @@
-Master’s Thesis — Preparation of aLAMMPS-FrameworkforLarge-ScaleParallel Replica Dynamics Simulations of Ablative Thermal Protection Material
+Master’s Thesis — Preparation of a LAMMPS-FrameworkforLarge-ScaleParallel Replica Dynamics Simulations of Ablative Thermal Protection Material
 
 Overview
 
@@ -36,6 +36,21 @@ Spatial domain decomposition (MPI in LAMMPS)
 
 This enables:
 
-Efficient HPC scaling
-Reduced wall-clock time for long-timescale processes
-Improved sampling of rare physical transitions
+1. Efficient HPC scaling
+2. Reduced wall-clock time for long-timescale processes
+3. Improved sampling of rare physical transitions
+
+
+Research Context and Contribution
+
+This work contributes to the development of multiscale modeling frameworks for ablative thermal protection materials, with a focus on bridging atomistic-scale dynamics and macroscopic thermal response in extreme aerospace environments.
+
+In particular, the thesis advances computational capabilities for rare-event-driven processes in ablative flows by integrating Parallel Replica Dynamics with scalable high-performance computing strategies. This enables the study of physically relevant long-timescale mechanisms, such as bond breaking and material degradation, that are otherwise inaccessible through conventional molecular dynamics.
+
+The resulting framework supports improved predictive modeling of thermal protection systems by enhancing both temporal reach and spatial scalability in atomistic simulations.
+
+
+
+
+
+
