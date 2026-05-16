@@ -12,7 +12,7 @@ thermal protection systems in aerospace applications.
 
 Key Objectives
 1. Extend LAMMPS for custom simulation workflows relevant to ablative materials
-2. Implement a bond-breaking event detector for Parallel Replica Dynamics (PRD) simulations.
+2. Implement a bond-breaking event detector for Parallel Replica Dynamics (PRD) simulations. Adapted from Joshi et. al. (DOI:https://doi.org/10.1021/jz4019223)
 3. Combine PRD with spatial domain decomposition for scalable HPC execution
 4. Enable microsecond-scale effective simulation times for large atomic systems
 

@@ -1,0 +1,3 @@
+The architecture diagram shows the control flow between the various objects in order to run the implemented framework in the LAMMPS environment. 
+
+The second box is the name of the methodcalledwithinthat object, and the arrows represent the control flow. The numbers indicated in the quadrilateral are the order in which the function calls are made from the PRD loop, and the numbers in circles indicate the order of the nested function calls. The optional call to element_filterin() is indicated using a dotted box.
