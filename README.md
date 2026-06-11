@@ -1,6 +1,6 @@
 # LAMMPS Framework for Large-Scale Parallel Replica Dynamics Simulations of Ablative Thermal Protection Material
 
-**Master's Thesis — TU Munich, Chair of Thermodynamics (Prof. Dr. Dongsheng Wen, supervised by Mateusz Hoffert, M.Sc.)**
+**Master's Thesis — TU Munich, Chair of Thermodynamics**
 
 A custom extension of the [LAMMPS](https://www.lammps.org/) molecular dynamics framework implementing a **bond-connectivity-based event detection algorithm for Parallel Replica Dynamics (PRD)**, enabling reactive molecular dynamics simulations of ablative thermal protection materials to reach timescales far beyond the limits of conventional MD.
 
@@ -30,7 +30,7 @@ The workflow needs no user intervention for bond data management, with all bond 
 
 The control flow of the implemented algorithm, from input script through replica orchestration, event detection, and inter-replica MPI communication:
 
-![Algorithm control flow](Architecture/[Architecture_Diagram.png])
+![Algorithm control flow](Architecture/Architecture_Diagram.png)
 
 ## Validation
 
