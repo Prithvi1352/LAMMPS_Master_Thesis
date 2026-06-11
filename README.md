@@ -1,56 +1,53 @@
-Master’s Thesis — Preparation of a LAMMPS-FrameworkforLarge-ScaleParallel Replica Dynamics Simulations of Ablative Thermal Protection Material
+# LAMMPS Framework for Large-Scale Parallel Replica Dynamics Simulations of Ablative Thermal Protection Material
 
-Overview
+**Master's Thesis — TU Munich, Chair of Thermodynamics (Prof. Dr. Dongsheng Wen, supervised by Mateusz Hoffert, M.Sc.)**
 
-This repository focuses on the system architecture and methodological overview; implementation-specific source code is not included.
+A custom extension of the [LAMMPS](https://www.lammps.org/) molecular dynamics framework implementing a **bond-connectivity-based event detection algorithm for Parallel Replica Dynamics (PRD)**, enabling reactive molecular dynamics simulations of ablative thermal protection materials to reach timescales far beyond the limits of conventional MD.
 
-The work focuses on extending the LAMMPS molecular dynamics framework to enable large-scale, long-timescale simulations of ablative thermal protection materials using a 
-hybrid Parallel Replica Dynamics (PRD) and domain-decomposed parallelization strategy.
+> The implementation is part of ongoing research at TUM and the source code is not public. This repository documents the motivation, methodology, and validation outcomes.
 
-The goal is to overcome the inherent timescale limitations of classical molecular dynamics and enable simulation of rare-event driven physical processes relevant to 
-thermal protection systems in aerospace applications.
+---
 
-Key Objectives
-1. Extend LAMMPS for custom simulation workflows relevant to ablative materials
-2. Implement a bond-breaking event detector for Parallel Replica Dynamics (PRD) simulations. Adapted from Joshi et. al. (DOI:https://doi.org/10.1021/jz4019223)
-3. Combine PRD with spatial domain decomposition for scalable HPC execution
-4. Enable microsecond-scale effective simulation times for large atomic systems
+## The Problem
 
-Features
-1. Custom LAMMPS modifications in C++
-2. MPI-based parallel execution framework
-3. Parallel Replica Dynamics implementation for rare-event sampling
-4. HPC-ready simulation setup (SLURM-compatible workflows)
-5. Post-processing tools for trajectory and state analysis
-6. Scalable architecture for large atomic systems
+Vehicles in hypersonic flight rely on ablative thermal protection systems (TPS), whose decomposition is a thermo-chemo-mechanical process spanning length scales from centimeters down to nanometers. Modeling it correctly requires atomistic insight from reactive molecular dynamics. Reactive MD, however, is doubly constrained: the femtosecond timestep limits simulations to nanoseconds, and reactive potentials make each timestep more expensive still. The chemistry that matters unfolds over far longer timescales at experimentally relevant temperatures.
 
-Methodology
-1. Molecular Dynamics Base - Simulations are built on the LAMMPS MD engine, modeling atomic interactions using appropriate interatomic potentials for ablative materials.
+Parallel Replica Dynamics overcomes this barrier by running many statistically independent replicas in parallel and advancing the simulation clock through rare-event detection. PRD has one central requirement: a reliable way to detect that the system has transitioned to a new state. For reactive systems, the natural state definition is bond connectivity, and a publicly available framework combining PRD with bond-based event detection did not exist. This thesis built one.
 
-2. Parallel Replica Dynamics (PRD) - The PRD approach accelerates simulation time by running multiple statistically independent replicas of the system in parallel, effectively sampling rare transition events.
+## The Contribution
 
-3. Hybrid Parallelization Strategy - A combined approach is used:
+The framework extends LAMMPS in C++ with new commands, computes, and fixes that together make bond-based PRD simulations of reactive systems possible:
 
-Replica-level parallelism (PRD)
-Spatial domain decomposition (MPI in LAMMPS)
+- **`rprd`** — Reactive Parallel Replica Dynamics. A new run command, built on the architecture of LAMMPS's native `prd`, that orchestrates the full PRD cycle (dephasing, dynamics, event checking, quenching, correlated search) with the custom event detection compute and automated bond snapshot handling
+- **`prd_val`** — a validation companion command that stops each replica at its first detected event, enabling direct verification of first-order escape kinetics
+- **`compute event/bondbreaking`** — the core of the event detection algorithm: detects state transitions from changes in bond connectivity, configurable to monitor all atom types or selected types only
+- **`fix reaxff/prd_species`** — species tracking for reactive (ReaxFF) PRD simulations
+- **`fix reaxff/bonds`** (adapted) — extended for in-memory bond snapshot handling
 
-This enables:
+The workflow needs no user intervention for bond data management, with all bond data handled in program memory to avoid I/O overhead during simulation. The entire simulation is controlled from the input script, keeping conditions transparent and reproducible. The implementation is compatible with LAMMPS spatial domain decomposition, with memory-efficient handling of multiple processors per replica, so simulations parallelize in space and time simultaneously.
 
-1. Efficient HPC scaling
-2. Reduced wall-clock time for long-timescale processes
-3. Improved sampling of rare physical transitions
+## Architecture
 
+The control flow of the implemented algorithm, from input script through replica orchestration, event detection, and inter-replica MPI communication:
 
-Research Context and Contribution
+![Algorithm control flow](Architecture/[Architecture_Diagram.png])
 
-This work contributes to the development of multiscale modeling frameworks for ablative thermal protection materials, with a focus on bridging atomistic-scale dynamics and macroscopic thermal response in extreme aerospace environments.
+## Validation
 
-In particular, the thesis advances computational capabilities for rare-event-driven processes in ablative flows by integrating Parallel Replica Dynamics with scalable high-performance computing strategies. This enables the study of physically relevant long-timescale mechanisms, such as bond breaking and material degradation, that are otherwise inaccessible through conventional molecular dynamics.
+The setup was verified for correct event detection and validated against the requirements of PRD theory on the LRZ Linux cluster:
 
-The resulting framework supports improved predictive modeling of thermal protection systems by enhancing both temporal reach and spatial scalability in atomistic simulations.
+- **First-order escape kinetics**, the fundamental statistical requirement for valid PRD, was confirmed
+- **Processor-count independence:** simulations produce statistically similar trajectories regardless of the number of processors assigned per replica
+- **HPC scalability:** scaling tests with up to 112 replicas and 200 cores showed that increasing the replica count does not dramatically increase loop time
 
+The result is a validated setup for spatio-temporal acceleration of reactive MD, making decomposition chemistry at experimentally relevant temperatures accessible to direct atomistic simulation.
 
+## Research Context
 
+This work is the molecular dynamics component of a broader multiscale modeling effort for ablative TPS, where atomistic insight into decomposition mechanisms informs continuum-scale material response models used to predict heatshield performance under reentry conditions.
 
+## Key References
 
-
+- Voter, A.F. (1998). Parallel replica method for the dynamics of infrequent events. *Phys. Rev. B*, 57, R13985.
+- Joshi, K.L. et al. (2013). Reactive Parallel Replica Dynamics with bond-connectivity-based event detection. [DOI: 10.1021/jz4019223](https://doi.org/10.1021/jz4019223)
+- LAMMPS — [lammps.org](https://www.lammps.org/)
